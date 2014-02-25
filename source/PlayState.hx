@@ -1,11 +1,13 @@
 package;
 
 import flixel.FlxG;
+import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.util.FlxMath;
+import flixel.plugin.MouseEventManager;
 
 /**
  * A FlxState which can be used for the actual gameplay.
@@ -13,32 +15,80 @@ import flixel.util.FlxMath;
 class PlayState extends FlxState
 {
 	
+	private var currentEnemy:FlxSprite;
+	
+	private var currentWorld:Int = 0;//0 = Fields
+	private var comboDecayTime:Int = 1000;
+	private var currentCombo:Int = 1;
+	private var currentWeaponDamage:Int = 1;
+	private var totalDamage:Int = 0;
+	
 	override public function create():Void
 	{
-		// Set a background color
+		
 		FlxG.cameras.bgColor = 0xff131c1b;
-		// Show the mouse (in case it hasn't been disabled)
+		
 		#if !FLX_NO_MOUSE
 		FlxG.mouse.show();
 		#end
 		
+		FlxG.plugins.add(new MouseEventManager());
+		
+		currentEnemy = new FlxSprite(320, 240);//, 100, 100);//, "BUTTON", doDamage);
+		currentEnemy.loadGraphic("assets/images/Button.png", true, true, 100, 100);
+		currentEnemy.health = 10;
+		add(currentEnemy);
+		
+		//trace("poop");
+		
 		super.create();
+		
+		MouseEventManager.addSprite(currentEnemy, onDown, onUp, onOver, onOut);
 	}
 	
-	/**
-	 * Function that is called when this state is destroyed - you might want to 
-	 * consider setting all objects this state uses to null to help garbage collection.
-	 */
+	private function onDown(Sprite:FlxSprite):Void
+	{
+		currentEnemy.hurt(currentWeaponDamage);
+	}
+	
+	private function onUp(Sprite:FlxSprite):Void
+	{
+		Sprite.velocity.y += 5;
+	}
+	
+	private function onOver(Sprite:FlxSprite):Void
+	{
+		Sprite.velocity.y -= 5;
+	}
+	
+	private function onOut(Sprite:FlxSprite):Void
+	{
+		Sprite.velocity.x = 0;
+	}
+	
 	override public function destroy():Void
 	{
 		super.destroy();
 	}
 
-	/**
-	 * Function that is called once every frame.
-	 */
+	
 	override public function update():Void
 	{
+		
+		
+		totalDamage = 0;
+		
+		if (FlxG.mouse.justPressed) 
+		{
+			//if (FlxG.mouse.
+		}
+		
+		
+		totalDamage = (currentCombo * 2) * currentWeaponDamage;
+		
+		//doDamage(currentEnemy, totalDamage);
+		
 		super.update();
+		
 	}	
 }
